@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0d1b35" />
+  <title>Air Services — Photos Pièces</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:       #0d1b35;
+      --blue:       #2563eb;
+      --blue-light: #3b82f6;
+      --white:      #ffffff;
+      --radius:     16px;
+      --shadow:     0 4px 24px rgba(0,0,0,0.22);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--navy);
+      min-height: 100vh;
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(37,99,235,0.18) 0%, transparent 70%),
+        linear-gradient(180deg, #0d1b35 0%, #0a1528 60%, #060e1e 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 28px 28px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 16px 40px;
+    }
+
+    /* ── Header ── */
+    .header {
+      width: 100%;
+      max-width: 420px;
+      padding: 36px 0 24px;
+      text-align: center;
+    }
+    .header img {
+      width: 200px;
+      max-width: 65vw;
+      filter: brightness(0) invert(1) drop-shadow(0 2px 12px rgba(37,99,235,0.5));
+    }
+    .tricolor {
+      display: flex;
+      height: 3px;
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 14px auto 0;
+      width: 160px;
+    }
+    .tricolor span { flex: 1; }
+    .tricolor span:nth-child(1) { background: #002395; }
+    .tricolor span:nth-child(2) { background: #ffffff; }
+    .tricolor span:nth-child(3) { background: #ed2939; }
+    .header-sub {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      font-weight: 500;
+    }
+
+    /* ── Card ── */
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      animation: slideUp .3s cubic-bezier(.22,.68,0,1.2);
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card-inner { padding: 28px 24px; }
+
+    /* ── PIN ── */
+    #section-pin .card-inner { text-align: center; padding: 36px 28px; }
+    .pin-icon {
+      font-size: 2.6rem;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 0 14px rgba(37,99,235,0.55));
+    }
+    .pin-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .pin-desc {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /* ── Saisie PIN ── */
+    .pin-input-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    #pin-input {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 16px 50px 16px 20px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.2em;
+      text-align: center;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color .2s, background .2s;
+    }
+    #pin-input:focus {
+      outline: none;
+      border-color: var(--blue-light);
+      background: rgba(37,99,235,0.08);
+    }
+    #pin-input::placeholder { letter-spacing: 0; font-size: 1rem; font-weight: 400; color: rgba(255,255,255,0.2); }
+
+    #pin-toggle {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      color: rgba(255,255,255,0.3);
+      font-size: 1.2rem; cursor: pointer;
+      padding: 4px;
+    }
+
+    #btn-pin {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white; border: none; border-radius: 14px;
+      font-size: 1rem; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(37,99,235,0.4);
+      transition: opacity .2s, transform .15s;
+      margin-bottom: 4px;
+    }
+    #btn-pin:active { transform: scale(0.98); }
+    #btn-pin:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+
+    .pin-error {
+      display: none;
+      font-size: 0.82rem;
+      color: #f87171;
+      margin-top: 10px;
+      text-align: center;
+      animation: shake .3s ease;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25%      { transform: translateX(-6px); }
+      75%      { transform: translateX(6px); }
+    }
+
+    /* ── Formulaire ── */
+    #section-form { display: none; }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 20px;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .top-bar-label {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.35);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    #btn-lock {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: #f87171;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 5px 11px;
+      border-radius: 7px;
+    }
+
+    .field { margin-bottom: 20px; }
+    .field-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 8px;
+    }
+    .field-label .bar {
+      width: 3px; height: 14px;
+      background: var(--blue-light);
+      border-radius: 99px; flex-shrink: 0;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      border: 1.5px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.06em;
+      transition: border-color .2s, background .2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input[type="text"]::placeholder { color: rgba(255,255,255,0.18); font-weight: 400; letter-spacing: 0; }
+    input[type="text"]:focus { outline: none; border-color: var(--blue-light); background: rgba(37,99,235,0.07); }
+
+    /* ── Zone upload ── */
+    .upload-zone {
+      position: relative;
+      border: 2px dashed rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      background: rgba(255,255,255,0.02);
+    }
+    .upload-zone.has-files { border-color: rgba(37,99,235,0.4); background: rgba(37,99,235,0.06); }
+    .upload-zone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0;
+      cursor: pointer; width: 100%; height: 100%;
+      appearance: none; -webkit-appearance: none;
+    }
+    .upload-icon { font-size: 2.4rem; margin-bottom: 8px; display: block; filter: drop-shadow(0 0 10px rgba(37,99,235,0.4)); }
+    .upload-title { font-size: 0.92rem; font-weight: 600; color: rgba(255,255,255,0.8); margin-bottom: 3px; }
+    .upload-hint  { font-size: 0.75rem; color: rgba(255,255,255,0.28); }
+
+    #preview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .preview-item {
+      position: relative;
+      aspect-ratio: 1;
+    }
+    .preview-thumb {
+      width: 100%; height: 100%; object-fit: cover;
+      border-radius: 10px; border: 1.5px solid rgba(255,255,255,0.1);
+      display: block;
+    }
+    .preview-del {
+      position: absolute;
+      top: -6px; right: -6px;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 2px solid var(--navy);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      line-height: 1;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+      transition: transform .1s, background .1s;
+    }
+    .preview-del:active { transform: scale(0.88); background: #dc2626; }
+    .preview-more {
+      aspect-ratio: 1; border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.5);
+    }
+    #file-count {
+      font-size: 0.82rem; color: var(--blue-light);
+      font-weight: 600; margin-top: 8px; text-align: center;
+    }
+
+    .error-box {
+      display: none;
+      background: rgba(220,38,38,0.1);
+      border: 1px solid rgba(220,38,38,0.25);
+      color: #fca5a5;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.85rem;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    .divider { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0 20px; }
+
+    #btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white; border: none; border-radius: 14px;
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.02em;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(37,99,235,0.4);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      position: relative; overflow: hidden;
+      transition: opacity .2s, transform .15s;
+    }
+    #btn-submit::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+    }
+    #btn-submit:active:not(:disabled) { transform: scale(0.98); }
+    #btn-submit:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
+
+    /* ── Progression ── */
+    #section-progress { display: none; }
+    #section-progress .card-inner { padding: 36px 28px; text-align: center; }
+    .progress-heli {
+      font-size: 2.8rem; display: block; margin-bottom: 20px;
+      animation: fly 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 12px rgba(37,99,235,0.5));
+    }
+    @keyframes fly {
+      0%   { transform: translateY(0) rotate(-2deg); }
+      50%  { transform: translateY(-8px) rotate(2deg); }
+      100% { transform: translateY(0) rotate(-2deg); }
+    }
+    .prog-title { font-size: 1rem; font-weight: 700; margin-bottom: 5px; }
+    .prog-sub   { font-size: 0.82rem; color: rgba(255,255,255,0.38); margin-bottom: 22px; }
+    .progress-track {
+      background: rgba(255,255,255,0.06); border-radius: 99px;
+      height: 8px; overflow: hidden; margin-bottom: 8px; position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #38bdf8, #4ade80);
+      border-radius: 99px;
+      transition: width .4s cubic-bezier(.4,0,.2,1);
+      width: 0%;
+    }
+    .prog-pct { font-size: 0.78rem; color: rgba(255,255,255,0.35); text-align: right; }
+
+    /* ── Résultat ── */
+    #section-result { display: none; }
+    #section-result .card-inner { padding: 36px 28px; text-align: center; }
+    .result-ring {
+      width: 78px; height: 78px; border-radius: 50%;
+      background: linear-gradient(135deg, rgba(22,163,74,0.18), rgba(22,163,74,0.06));
+      border: 2px solid rgba(22,163,74,0.4);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; margin-bottom: 18px;
+      animation: popIn .4s cubic-bezier(.22,.68,0,1.4);
+    }
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .result-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; }
+    .result-ref {
+      display: inline-block;
+      background: rgba(37,99,235,0.15); border: 1px solid rgba(37,99,235,0.3);
+      color: #93c5fd; padding: 4px 14px; border-radius: 99px;
+      font-size: 0.85rem; font-weight: 700; letter-spacing: 0.05em;
+      margin: 8px 0 12px;
+    }
+    .result-sub { font-size: 0.84rem; color: rgba(255,255,255,0.38); line-height: 1.6; margin-bottom: 22px; }
+    #btn-new {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 13px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: none; border-radius: 12px; color: white;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+    }
+    #btn-new:active { transform: scale(0.97); }
+
+    .footer {
+      margin-top: 28px; text-align: center;
+      font-size: 0.7rem; color: rgba(255,255,255,0.12);
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <img src="logo_air_services.png" alt="Air Services" />
+    <div class="tricolor"><span></span><span></span><span></span></div>
+    <p class="header-sub">Gestion des pièces &amp; photos</p>
+  </header>
+
+  <!-- ══════════════════════════════ -->
+  <!--  ÉTAPE 1 — Code PIN           -->
+  <!-- ══════════════════════════════ -->
+  <div id="section-pin" style="width:100%;max-width:420px;">
+    <div class="card">
+      <div class="card-inner">
+        <div class="pin-icon">🔐</div>
+        <div class="pin-title">Code d'accès</div>
+        <p class="pin-desc">Entre le code fourni par ton responsable</p>
+
+        <div class="pin-input-wrap">
+          <input
+            type="password"
+            id="pin-input"
+            placeholder="Code d'accès"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="none"
+            spellcheck="false"
+          />
+          <button id="pin-toggle" type="button" onclick="togglePinVisibility()" tabindex="-1">👁</button>
+        </div>
+
+        <button id="btn-pin" onclick="verifyPin()" disabled>Accéder</button>
+        <div class="pin-error" id="pin-error">Code incorrect — réessaie</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ -->
+  <!--  ÉTAPE 2 — Formulaire         -->
+  <!-- ══════════════════════════════ -->
+  <div id="section-form" style="width:100%;max-width:420px;display:none;">
+    <div class="card">
+      <div class="top-bar">
+        <span class="top-bar-label">✈️ Technicien connecté</span>
+        <button id="btn-lock" onclick="lock()">🔒 Verrouiller</button>
+      </div>
+      <div class="card-inner">
+        <div class="field">
+          <div class="field-label"><span class="bar"></span>Numéro de pièce</div>
+          <input type="text" id="input-ref" placeholder="ex : AS350-12345"
+            autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+        </div>
+        <div class="field">
+          <div class="field-label"><span class="bar"></span>Photos</div>
+          <div class="upload-zone" id="upload-zone">
+            <input type="file" id="file-input" accept="image/*" multiple />
+            <span class="upload-icon">📷</span>
+            <div class="upload-title">Prendre des photos ou importer</div>
+            <div class="upload-hint">Galerie · Appareil photo · Plusieurs fichiers</div>
+          </div>
+          <div id="preview-grid"></div>
+          <div id="file-count"></div>
+        </div>
+        <div class="error-box" id="error-box"></div>
+        <div class="divider"></div>
+        <button id="btn-submit" onclick="submit()" disabled>
+          ☁️ Envoyer sur Drive
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ -->
+  <!--  ÉTAPE 3 — Progression        -->
+  <!-- ══════════════════════════════ -->
+  <div id="section-progress" style="width:100%;max-width:420px;display:none;">
+    <div class="card">
+      <div class="card-inner">
+        <span class="progress-heli">🚁</span>
+        <div class="prog-title" id="prog-title">Envoi en cours…</div>
+        <div class="prog-sub"   id="prog-sub">Préparation</div>
+        <div class="progress-track">
+          <div class="progress-fill" id="prog-fill"></div>
+        </div>
+        <div class="prog-pct" id="prog-pct">0 / 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════ -->
+  <!--  ÉTAPE 4 — Résultat           -->
+  <!-- ══════════════════════════════ -->
+  <div id="section-result" style="width:100%;max-width:420px;display:none;">
+    <div class="card">
+      <div class="card-inner">
+        <div class="result-ring">✅</div>
+        <div class="result-title" id="res-title">Photos envoyées !</div>
+        <div class="result-ref"   id="res-ref"></div>
+        <p class="result-sub"     id="res-sub"></p>
+        <button id="btn-new" onclick="reset()">➕ Nouvelle pièce</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Air Services © 2025 — Usage interne</div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────────────
+//  CONFIG — à renseigner après déploiement Apps Script
+// ──────────────────────────────────────────────────────
+const SCRIPT_URL = "à remplir";
+
+let selectedFiles = [];
+
+// ── PIN ──────────────────────────────────────────────
+const pinInput = document.getElementById("pin-input");
+const btnPin   = document.getElementById("btn-pin");
+
+pinInput.addEventListener("input", () => {
+  document.getElementById("pin-error").style.display = "none";
+  btnPin.disabled = pinInput.value.trim().length === 0;
+});
+
+pinInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") verifyPin();
+});
+
+function togglePinVisibility() {
+  pinInput.type = pinInput.type === "password" ? "text" : "password";
+}
+
+async function verifyPin() {
+  const pin = pinInput.value.trim();
+  if (!pin) return;
+
+  btnPin.disabled  = true;
+  btnPin.textContent = "Vérification…";
+
+  try {
+    const res  = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "checkPin", pin }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      sessionStorage.setItem("as_pin", pin);
+      show("section-form");
+    } else {
+      badPin("Code incorrect — réessaie");
+    }
+  } catch {
+    badPin("Serveur inaccessible — vérifie ta connexion");
+  } finally {
+    btnPin.disabled    = false;
+    btnPin.textContent = "Accéder";
+  }
+}
+
+function badPin(msg) {
+  pinInput.value = "";
+  btnPin.disabled = true;
+  const err = document.getElementById("pin-error");
+  err.textContent = msg;
+  err.style.display = "block";
+  pinInput.focus();
+}
+
+function getPin() {
+  return sessionStorage.getItem("as_pin") || "";
+}
+
+function lock() {
+  sessionStorage.removeItem("as_pin");
+  pinInput.value  = "";
+  btnPin.disabled = true;
+  show("section-pin");
+  pinInput.focus();
+}
+
+// Restaurer session si déjà connecté dans l'onglet
+if (sessionStorage.getItem("as_pin")) {
+  show("section-form");
+} else {
+  show("section-pin");
+  setTimeout(() => pinInput.focus(), 300);
+}
+
+// ── Fichiers ─────────────────────────────────────────
+document.getElementById("file-input").addEventListener("change", function () {
+  selectedFiles = Array.from(this.files);
+  renderPreviews();
+  document.getElementById("upload-zone").classList.toggle("has-files", selectedFiles.length > 0);
+  updateBtn();
+});
+
+function renderPreviews() {
+  const grid  = document.getElementById("preview-grid");
+  const count = document.getElementById("file-count");
+  grid.innerHTML = "";
+  const max = 7;
+
+  selectedFiles.slice(0, max).forEach((f, i) => {
+    const wrap = document.createElement("div");
+    wrap.className = "preview-item";
+
+    const img = document.createElement("img");
+    img.className = "preview-thumb";
+    img.src = URL.createObjectURL(f);
+
+    const del = document.createElement("div");
+    del.className = "preview-del";
+    del.textContent = "✕";
+    del.addEventListener("click", () => removeFile(i));
+
+    wrap.appendChild(img);
+    wrap.appendChild(del);
+    grid.appendChild(wrap);
+  });
+
+  if (selectedFiles.length > max) {
+    const more = document.createElement("div");
+    more.className = "preview-more";
+    more.textContent = "+" + (selectedFiles.length - max);
+    grid.appendChild(more);
+  }
+
+  count.textContent = selectedFiles.length
+    ? `${selectedFiles.length} photo${selectedFiles.length > 1 ? "s" : ""} sélectionnée${selectedFiles.length > 1 ? "s" : ""}`
+    : "";
+}
+
+function removeFile(index) {
+  selectedFiles.splice(index, 1);
+  renderPreviews();
+  document.getElementById("upload-zone").classList.toggle("has-files", selectedFiles.length > 0);
+  updateBtn();
+}
+
+document.getElementById("input-ref").addEventListener("input", updateBtn);
+function updateBtn() {
+  const ref = document.getElementById("input-ref").value.trim();
+  document.getElementById("btn-submit").disabled = !(ref && selectedFiles.length > 0);
+}
+
+// ── Upload ───────────────────────────────────────────
+async function submit() {
+  hideError();
+  const ref = document.getElementById("input-ref").value.trim().toUpperCase();
+  if (!ref || !selectedFiles.length) return;
+
+  show("section-progress");
+  let folderLink = "";
+
+  try {
+    for (let i = 0; i < selectedFiles.length; i++) {
+      const f = selectedFiles[i];
+      setProgress(i, selectedFiles.length,
+        `Photo ${i + 1} / ${selectedFiles.length}`,
+        f.name.length > 34 ? f.name.slice(0, 32) + "…" : f.name
+      );
+
+      const base64 = await toBase64(f);
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "upload",
+          pin:    getPin(),
+          ref:    ref,
+          file: {
+            name: f.name,
+            type: f.type || "image/jpeg",
+            data: base64,
+          },
+        }),
+      });
+
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || "Erreur serveur");
+      if (data.folderLink) folderLink = data.folderLink;
+    }
+
+    // Succès
+    const n = selectedFiles.length;
+    document.getElementById("res-title").textContent = `${n} photo${n > 1 ? "s" : ""} envoyée${n > 1 ? "s" : ""} !`;
+    document.getElementById("res-ref").textContent   = ref;
+    document.getElementById("res-sub").textContent   =
+      "Photos sauvegardées sur Google Drive.\nLa synchronisation Excel se fera automatiquement cette nuit.";
+    show("section-result");
+
+  } catch (err) {
+    show("section-form");
+    showError("Erreur : " + err.message);
+  }
+}
+
+function toBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload  = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── UI ───────────────────────────────────────────────
+function show(id) {
+  ["section-pin","section-form","section-progress","section-result"].forEach(s => {
+    document.getElementById(s).style.display = s === id ? "block" : "none";
+  });
+}
+
+function setProgress(done, total, title, sub) {
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  document.getElementById("prog-fill").style.width = pct + "%";
+  document.getElementById("prog-pct").textContent  = `${done} / ${total} photos`;
+  document.getElementById("prog-title").textContent = title;
+  document.getElementById("prog-sub").textContent   = sub;
+}
+
+function showError(msg) {
+  const el = document.getElementById("error-box");
+  el.textContent = msg; el.style.display = "block";
+}
+function hideError() { document.getElementById("error-box").style.display = "none"; }
+
+function reset() {
+  document.getElementById("input-ref").value = "";
+  document.getElementById("file-input").value = "";
+  document.getElementById("preview-grid").innerHTML = "";
+  document.getElementById("file-count").textContent = "";
+  document.getElementById("upload-zone").classList.remove("has-files");
+  selectedFiles = [];
+  updateBtn();
+  show("section-form");
+}
+
+</script>
+</body>
+</html>
